@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Surveillance Control Center</title>
+    <style>
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .header { 
+            text-align: center; 
+            padding-bottom: 20px; 
+            border-bottom: 1px solid #333; 
+            margin-bottom: 20px; 
+        }
+        .header h1 { margin: 0; color: #00ff88; }
+        .container { 
+            display: flex; 
+            gap: 20px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+        .video-panel { 
+            flex: 3; 
+            background: #1e1e1e; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .upload-section {
+            margin-bottom: 15px; 
+            background: #2a2a2a; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .upload-section input[type="file"] {
+            color: #888;
+        }
+        .upload-btn {
+            background: #00ff88; 
+            color: black; 
+            border: none; 
+            padding: 8px 18px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .upload-btn:hover {
+            background: #00cc6e;
+        }
+        .video-panel img { 
+            width: 100%; 
+            border-radius: 4px; 
+            border: 1px solid #000;
+        }
+        .side-panel { 
+            flex: 1; 
+            background: #1e1e1e; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .status-indicator { 
+            display: inline-block; 
+            width: 12px; 
+            height: 12px; 
+            background-color: #00ff88; 
+            border-radius: 50%; 
+            margin-right: 10px; 
+            box-shadow: 0 0 10px #00ff88; 
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+        .log-box { 
+            flex-grow: 1; 
+            background: #0a0a0a; 
+            margin-top: 15px; 
+            border-radius: 4px; 
+            padding: 15px; 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #888; 
+            overflow-y: auto; 
+            max-height: 400px; 
+            border: 1px inset #333;
+        }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px dashed #222; padding-bottom: 4px; }
+        .system-text { color: #00ff88; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><span class="status-indicator"></span>Smart Surveillance Control Center</h1>
+        <p>AI-Powered Behavior Analysis & Threat Tracking System</p>
+    </div>
+    
+    <div class="container">
+        <div class="video-panel">
+            <div class="upload-section">
+                <div>
+                    <h3 style="margin-top: 0; margin-bottom: 5px; font-size: 1rem; color: #00ff88;">📁 Upload Footage</h3>
+                    <input type="file" id="videoUpload" accept="video/*">
+                </div>
+                <button class="upload-btn" onclick="uploadVideo()">Analyze Video</button>
+            </div>
+
+            <h2 style="margin-top: 0; font-size: 1.2rem;">Live Camera Feed (Zone 1)</h2>
+            <img src="/video_feed" alt="Live Video Feed">
+        </div>
+
+        <div class="side-panel">
+            <h2 style="margin-top: 0; font-size: 1.2rem;">System Status</h2>
+            <p>🟢 Camera: Online</p>
+            <p>🟢 Vision Engine: YOLOv8</p>
+            <p>🟢 Tracking: ByteTrack</p>
+            <p>🟢 Behavior Logic: Active</p>
+            
+            <h3 style="margin-bottom: 5px;">Event Logs</h3>
+            <div class="log-box">
+                <div class="log-entry system-text">[SYSTEM] Server initialized...</div>
+                <div class="log-entry system-text">[SYSTEM] YOLOv8 Weights loaded...</div>
+                <div class="log-entry system-text">[SYSTEM] Video feed streaming...</div>
+                <div class="log-entry">[INFO] Waiting for behavior triggers...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FUNCTION: Fetch logs from the server
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/get_logs');
+                const data = await response.json();
+                
+                const logBox = document.querySelector('.log-box');
+                logBox.innerHTML = ''; 
+                
+                data.logs.forEach(log => {
+                    const logDiv = document.createElement('div');
+                    logDiv.className = 'log-entry';
+                    
+                    if (log.includes('[SYSTEM]')) {
+                        logDiv.classList.add('system-text');
+                    } else if (log.includes('🚨') || log.includes('⚠️') || log.includes('👥') || log.includes('💥')) {
+                        logDiv.style.color = '#ff4444'; 
+                    }
+                    
+                    logDiv.textContent = log;
+                    logBox.appendChild(logDiv);
+                });
+            } catch (error) {
+                console.error("Error fetching logs:", error);
+            }
+        }
+
+        // NEW: AJAX function to upload video
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoUpload');
+            if (fileInput.files.length === 0) return alert("Please select a video file first!");
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch('/upload_video', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                alert(result.message);
+                
+                // Refresh to restart the stream with the uploaded file
+                window.location.reload();
+            } catch (error) {
+                console.error("Upload failed:", error);
+                alert("Error uploading video.");
+            }
+        }
+
+        setInterval(fetchLogs, 1000);
+        fetchLogs();
+    </script>
+</body>
+</html>
