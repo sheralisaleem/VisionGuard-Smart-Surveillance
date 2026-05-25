@@ -15,6 +15,12 @@
 
 An enterprise-grade, real-time computer vision security pipeline that transforms raw camera feeds and uploaded footage into an active threat intelligence network. Utilizing state-of-the-art multi-object tracking (YOLOv8 & ByteTrack) combined with custom behavioral heuristics, VisionGuard-AI automatically detects loitering, crowd formation, suspicious running, and erratic violent physical interactions—providing security teams with real-time logs, automated incident database persistence, and photographic evidence.
 
+<br />
+
+<p align="center">
+  <img src="demo.png" alt="VisionGuard-AI Surveillance Dashboard Demo" width="900" />
+</p>
+
 ---
 
 ## 📌 Table of Contents
